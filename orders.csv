@@ -1,2 +1,2 @@
-customer_name,customer_address,customer_phone,courier,status
-John,"104 Chigwell Road,London,ES8 8LK",07298438480,Mike,Preparing
+customer_name,customer_address,customer_phone,courier,status,items
+Johnny,"10 Bracken Close, London, IG9 9LT",07803847426,1,Out For Delivery,1

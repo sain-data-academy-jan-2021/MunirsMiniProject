@@ -2,6 +2,7 @@ def main_menu():
     choice = input("""1. Product Menu
 2. Courier Menu
 3. Order Menu
+4. Save data and exit
 0. Exit App """)
     return choice
 

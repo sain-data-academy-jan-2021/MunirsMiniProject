@@ -6,28 +6,9 @@ import menu_functions
 import text_functions
 import csv
 
-couriers = text_functions.read_data_from_csv_couriers()
-products = text_functions.read_data_from_csv_products()
-orders = text_functions.read_data_from_csv_orders()
-
-# orders = [{
-# "customer_name": "John",
-# "customer_address": "Unit 2, 12 Main Street, LONDON, WH1 2ER",
-# "customer_phone": "0789887334",
-# "customer_courier": "2",
-# "status": "preparing",
-# "order": ""},
-
-# {
-# "customer_name": "Mike",
-# "customer_address": "104 Canfield Road, LONDON, E1L 5TR",
-# "customer_phone": "07800900834",
-# "customer_courier": "5",
-# "status": "preparing",
-# "order": ""}]
-
-# products = text_functions.Text2List("products.txt")
-# couriers = text_functions.Text2List("couriers.txt")
+couriers = text_functions.read_data_from_csv("couriers.csv")
+products = text_functions.read_data_from_csv("products.csv")
+orders = text_functions.read_data_from_csv("orders.csv")
 
 print("""
       
@@ -40,7 +21,7 @@ __________                   .___             __     _____
                               \/           \/             \/|__|   |__|    
 """)
 
-    
+
 def RunApp():
     user_input_main = menu_functions.main_menu()
     while user_input_main != "0":
@@ -56,30 +37,28 @@ def RunApp():
                 elif user_input_product == "2":
                     new_product_name = input("What product would you like to add? (Press 0 to cancel!) ")
                     new_price = float(input("What is the price of this product?"))
+                    new_product_index = max([int(product["index"])for product in products]) + 1
                     if new_product_name == "0":
                         menu_functions.product_menu()
                     
                     new_product = {
+                        "index": new_product_index, 
                         "name": new_product_name,
                         "price": new_price}
                     
                     update_functions.add_dict_to_list(new_product, products)
+                    save_functions.save_dict_products_to_csv("products.csv", products)
                 elif user_input_product == "3":
                     product_name = input("What product would you like to update? (Press 0 to cancel!)")
-                    
-                    for product in products:
-                        while True:
+                    while True:
+                        for product in products:
                             updated_product_name = input("Please enter the updated Product name")
-                            product['name'] = updated_product_name
                             if updated_product_name != "":
-                                pass
-                            
-                            updated_product_price = float("What is the updated price of this product?")
-                            product['price'] = updated_product_price
+                                product['name'] = updated_product_name
+                            updated_product_price = float(input("What is the updated price of this product?"))
                             if updated_product_price != "":
-                                pass
-                            break
-                                
+                                product['price'] = updated_product_price
+                                break
                 elif user_input_product == "4":
                     delete_product = input("What product would you like to delete? (Press 0 to cancel!)")
                     
@@ -109,31 +88,46 @@ def RunApp():
                     print_functions.print_list(couriers)
                     
                 elif user_input_courier == "2":
-                    new_courier = input("Which courier would you like to add? (Press 0 to cancel!)")
+                    new_courier_name = input("Which courier would you like to add? (Press 0 to cancel!)")
+                    new_courier_phone = int(input("What is the contact number of the courier?"))
+                    new_courier_index = max([int(courier["index"])for courier in couriers]) + 1
+                    new_courier = {
+                        "index": new_courier_index,
+                        "name": new_courier_name,
+                        "phone": new_courier_phone}
                     
-                    if new_courier == "0":
+                    update_functions.add_dict_to_list(new_courier, couriers)
+                    save_functions.save_dict_couriers_to_csv("couriers.csv", couriers)
+                    
+                    if new_courier_name == "0":
                         menu_functions.courier_menu()
-                    update_functions.add_item_to_list(new_courier, couriers)
-                    save_functions.save_lists("couriers.txt", couriers)
                     
                 elif user_input_courier == "3":
-                    delete_courier = input("Which courier would you like to delete? (Press 0 to cancel!)")
+                    courier_name = input("Which courier would you like to delete? (Press 0 to cancel!)")
                     
-                    if delete_courier == "0":
-                        menu_functions.courier_menu()
-                    update_functions.delete_item_in_list(delete_courier, couriers)
+                    for courier in couriers:
+                        
+                        if courier['name'] == courier_name:
+                            update_functions.delete_dict_in_list(courier, couriers)
+                        if courier == "0":
+                            menu_functions.courier_menu()
+                    update_functions.delete_item_in_list(courier_name, couriers)
                     
                 elif user_input_courier == "4":
-                    update_courier = input("Which name would you like to update? (Press 0 to cancel!)")
+                    courier_name = input("Which courier details would you like to update? (Press 0 to cancel!)")
                     
-                    if update_courier == "0":
-                        menu_functions.courier_menu()
-                    updated_courier = input("What name you like to update this to? (Press 0 to cancel!)")
-                    
-                    if updated_courier == "0":
-                        menu_functions.courier_menu()
-                    update_functions.update_item_in_list(update_courier, updated_courier, couriers)
-                    save_functions.save_lists("couriers.txt", couriers)
+                    for courier in couriers:
+                        
+                        if courier['name'] == courier_name:
+                            while True:
+                                new_courier_name = input("Please enter the updated courier's name")
+                                if new_courier_name != "":
+                                    courier['name'] = new_courier_name
+                                new_courier_phone = input("Please enter the updated phone number of the courier")
+                                if new_courier_phone != "":
+                                    courier['phone'] = new_courier_phone
+                                    
+                                break
                 elif user_input_courier == "5":
                     break
                 user_input_courier = menu_functions.courier_menu()
@@ -151,17 +145,17 @@ def RunApp():
                     new_order_phone = input("Please enter the phone number of the customer: ")
                     new_order_address = input("Please enter the address of the customer: ")
                     print("The available couriers are::")
-                    print(couriers)
-                    new_order_courier = input("Please enter the courier you would like to deliver the order: ")
                     new_order = {
                         "customer_name": new_order_name,
                         "customer_phone": new_order_phone,
                         "customer_address": new_order_address,
-                        "courier": new_order_courier,
-                        "status": "Preparing"}
+                        "courier": text_functions.courier_list_select()["index"],
+                        "status": "Preparing",
+                        "items": text_functions.product_list_select()["index"]
+                        }
+                        
                         
                     update_functions.add_dict_to_list(new_order, orders)
-                    save_functions.save_dict_to_csv("orders.csv", new_order)
                     
                 elif user_input_order == "3":
                     order_name = input("Whose order status would you like to update? Press 0 to cancel! ")
@@ -196,22 +190,21 @@ def RunApp():
                                 if new_order_name != "":
                                     order['customer_name'] = new_order_name
                                 new_order_phone = input("Please enter the updated phone number of the customer: ")
-                                order['customer_phone'] = new_order_phone
-                                if new_order_phone == " ":
-                                    pass
+                                if new_order_phone != "":
+                                    order['customer_phone'] = new_order_phone
                                 new_order_address = input("Please enter the updated address of the customer: ")
-                                order['customer_address'] = new_order_address
-                                if new_order_address == " ":
-                                    pass
-                                print("The available couriers are::")
-                                print(couriers)
-                                new_order_courier = input("Please enter the courier you would like to deliver the order: ")
-                                order['courier'] = new_order_courier
+                                if new_order_address != "":
+                                    order['customer_address'] = new_order_address
+                                print("The available couriers are:")
+                                
+                                text_functions.courier_list_select()
+                                
                                 order['status'] = "Preparing"
-                                if new_order_courier == " ":
-                                    pass
+                                print("The available items are:")
+                                text_functions.product_list_select()
+                                
                                 break
-                                # update_functions.add_dict_to_list(order, orders)
+                                
                             
                 elif user_input_order == "5":
                     order_name = input("Whose order would you like to delete? ")
@@ -223,16 +216,24 @@ def RunApp():
                             update_functions.delete_dict_in_list(order, orders)
                             
                 elif user_input_order == "6":
-                    save_functions.save_dict_to_csv("orders.csv", orders)
                     break
                     menu_functions.main_menu()
                 user_input_order = menu_functions.order_menu()
             user_input_main = menu_functions.main_menu()
-                    
+        elif user_input_main == "4":
+            print("Your data has been saved, you will now exit the app")
+            # save_functions.save_dict_products_to_csv("products.csv", products)
+            # save_functions.save_dict_couriers_to_csv("couriers.csv", couriers)
+            save_functions.save_dict_to_csv("orders.csv", orders)
+            exit()
+            
         elif user_input_main == "0":
             menu_functions.main_menu() 
 RunApp()
 
+# Enter address as string (.split into objects)
+# Refining functions
+# print to a table (pip install pretty table)
 
 
 

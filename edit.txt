@@ -1,2 +1,0 @@
-customer_name,customer_address,customer_phone,courier,status
-John,"104 Chigwell Road,London,ES8 8LK",07298438480,Mike,Preparing
