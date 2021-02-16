@@ -1,30 +1,26 @@
 import sys
-import print_functions
-import save_functions
-import update_functions 
-import menu_functions
-import text_functions
-import csv
-import os
+# import print_functions
+# import save_functions
+# import update_functions 
+# import menu_functions
+# import text_functions
+# import csv
 import pymysql
-
+import os
+import db_functions
 from dotenv import load_dotenv
 
-
 load_dotenv()
-host = os.environ.get("mysql_host")
-user = os.environ.get("mysql_user")
-password = os.environ.get("mysql_pass")
-database = os.environ.get("mysql_db")
 
-# Establish a database connection
-connection = pymysql.connect(
-  host,
-  user,
-  password,
-  database
-)
+#12-23 consider breaking into a function and calling at the start of the app
+#
 
+# couriers = text_functions.read_data_from_csv("couriers.csv")
+# #products = text_functions.read_data_from_csv("products.csv")
+# orders = text_functions.read_data_from_csv("orders.csv")
+products = db_functions.read_product_data_from_db()
+
+print(products)
 
 print("""
       
@@ -34,11 +30,11 @@ __________                   .___             __     _____
  |     ___/\_  __ \/  _ \ / __ |  |  \_/ ___\   __\/  /_\  \\____ \\____ \ 
  |    |     |  | \(  <_> ) /_/ |  |  /\  \___|  | /    |    \  |_> >  |_> >
  |____|     |__|   \____/\____ |____/  \___  >__| \____|__  /   __/|   __/ 
-                              \/           \/             \/|__|   |__|     
+                              \/           \/             \/|__|   |__|    
 """)
 
 
-def RunApp(connection):
+def RunApp():
     user_input_main = menu_functions.main_menu()
     while user_input_main != "0":
         
@@ -48,17 +44,44 @@ def RunApp(connection):
             while user_input_product != 5:
                 
                 if user_input_product == "1":
-                    print_functions.read_product_data_from_db(connection)
+                    print_functions.print_list(products)
                     
                 elif user_input_product == "2":
-                    update_functions.add_product_in_db(connection)
+                    new_product_name = input("What product would you like to add? (Press 0 to cancel!) ")
+                    new_price = float(input("What is the price of this product?"))
+                    new_product_index = max([int(product["index"])for product in products]) + 1 #
+                    if new_product_name == "0":
+                        menu_functions.product_menu()
                     
+                    new_product = {                             # function adds a product to a table
+                        "index": new_product_index, 
+                        "name": new_product_name,
+                        "price": new_price}
+                    
+                    update_functions.add_dict_to_list(new_product, products) #
+                    save_functions.save_dict_products_to_csv("products.csv", products) #
                 elif user_input_product == "3":
-                    update_functions.update_product_in_db(connection)
-                    
+                    product_name = input("What product would you like to update? (Press 0 to cancel!)")
+                    while True:
+                        for product in products:
+                            updated_product_name = input("Please enter the updated Product name")
+                            if updated_product_name != "":
+                                product['name'] = updated_product_name
+                            updated_product_price = float(input("What is the updated price of this product?"))
+                            if updated_product_price != "":
+                                product['price'] = updated_product_price
+                                break
                 elif user_input_product == "4":
-                    print_functions.read_product_data_from_db(connection)
-                    update_functions.delete_product_in_db(connection)
+                    delete_product = input("What product would you like to delete? (Press 0 to cancel!)")
+                    
+                    for product in products:
+                        
+                        if product['name'] == delete_product:
+                        
+                            update_functions.delete_dict_in_list(product, products)
+                            
+                    if delete_product == "0":
+                        menu_functions.product_menu()
                     
                 elif user_input_product == "5":
                     
@@ -74,22 +97,54 @@ def RunApp(connection):
             while user_input_courier != 5:
                 
                 if user_input_courier == "1":
-                    print_functions.read_courier_data_from_db(connection)
+                    print_functions.print_list(couriers)
                     
                 elif user_input_courier == "2":
-                    update_functions.add_courier_to_db(connection)
+                    new_courier_name = input("Which courier would you like to add? (Press 0 to cancel!)")
+                    new_courier_phone = int(input("What is the contact number of the courier?"))
+                    new_courier_index = max([int(courier["index"])for courier in couriers]) + 1
+                    new_courier = {
+                        "index": new_courier_index,
+                        "name": new_courier_name,
+                        "phone": new_courier_phone}
+                    
+                    update_functions.add_dict_to_list(new_courier, couriers)
+                    save_functions.save_dict_couriers_to_csv("couriers.csv", couriers)
+                    
+                    if new_courier_name == "0":
+                        menu_functions.courier_menu()
                     
                 elif user_input_courier == "3":
-                    print_functions.read_courier_data_from_db
-                    update_functions.delete_courier_in_db(connection)
+                    courier_name = input("Which courier would you like to delete? (Press 0 to cancel!)")
+                    
+                    for courier in couriers:
+                        
+                        if courier['name'] == courier_name:
+                            update_functions.delete_dict_in_list(courier, couriers)
+                        if courier == "0":
+                            menu_functions.courier_menu()
+                    update_functions.delete_item_in_list(courier_name, couriers)
                     
                 elif user_input_courier == "4":
-                    update_functions.update_courier_in_db(connection)
+                    courier_name = input("Which courier details would you like to update? (Press 0 to cancel!)")
+                    
+                    for courier in couriers:
+                        
+                        if courier['name'] == courier_name:
+                            while True:
+                                new_courier_name = input("Please enter the updated courier's name")
+                                if new_courier_name != "":
+                                    courier['name'] = new_courier_name
+                                new_courier_phone = input("Please enter the updated phone number of the courier")
+                                if new_courier_phone != "":
+                                    courier['phone'] = new_courier_phone
+                                    
+                                break
                 elif user_input_courier == "5":
                     break
                 user_input_courier = menu_functions.courier_menu()
             user_input_main = menu_functions.main_menu()
-        elif user_input_main == "3": ####################################################################################
+        elif user_input_main == "3":
             user_input_order = menu_functions.order_menu()
             
             while user_input_order != 6:
@@ -182,14 +237,12 @@ def RunApp(connection):
             # save_functions.save_dict_products_to_csv("products.csv", products)
             # save_functions.save_dict_couriers_to_csv("couriers.csv", couriers)
             save_functions.save_dict_to_csv("orders.csv", orders)
-            connection.close()
-            exit()
+            #db_functions.close_connection()
+            exit() # Close connection just before where you exit the app
             
         elif user_input_main == "0":
-            connection.close()
-            # menu_functions.main_menu() 
-
-RunApp(connection)
+            menu_functions.main_menu() 
+RunApp()
 
 # Enter address as string (.split into objects)
 # Refining functions
