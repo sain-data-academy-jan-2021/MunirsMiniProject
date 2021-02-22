@@ -80,7 +80,6 @@ def RunApp(connection):
                     update_functions.add_courier_to_db(connection)
                     
                 elif user_input_courier == "3":
-                    print_functions.read_courier_data_from_db
                     update_functions.delete_courier_in_db(connection)
                     
                 elif user_input_courier == "4":
@@ -89,89 +88,22 @@ def RunApp(connection):
                     break
                 user_input_courier = menu_functions.courier_menu()
             user_input_main = menu_functions.main_menu()
-        elif user_input_main == "3": ####################################################################################
+        elif user_input_main == "3": 
             user_input_order = menu_functions.order_menu()
             
             while user_input_order != 6:
                 
                 if user_input_order == "1":
-                    print_functions.print_list(orders)
+                    print_functions.read_order_data_from_db(connection)
                     
                 elif user_input_order == "2":
-                    new_order_name = input("Please enter the name of the customer: ")
-                    new_order_phone = input("Please enter the phone number of the customer: ")
-                    new_order_address = input("Please enter the address of the customer: ")
-                    print("The available couriers are::")
-                    new_order = {
-                        "customer_name": new_order_name,
-                        "customer_phone": new_order_phone,
-                        "customer_address": new_order_address,
-                        "courier": text_functions.courier_list_select()["index"],
-                        "status": "Preparing",
-                        "items": text_functions.product_list_select()["index"]
-                        }
-                        
-                        
-                    update_functions.add_dict_to_list(new_order, orders)
-                    
+                    update_functions.add_order_to_db(connection)
                 elif user_input_order == "3":
-                    order_name = input("Whose order status would you like to update? Press 0 to cancel! ")
-                    
-                    if order_name == "0":
-                        menu_functions.order_menu()
-                        
-                    for order in orders:
-                    
-                        if order['customer_name'] == order_name:
-                            print("The current status of this order is: ")
-                            print(order['status'])
-                        
-                    new_status = input("What is the new status of this order? ")
-                    
-                    for order in orders:
-                        
-                        if order['customer_name'] == order_name:
-                            order['status'] = new_status
-                            print("The new order status is: " + new_status)
-                    print(orders)
-                    
+                    update_functions.update_order_status_in_db(connection)
                 elif user_input_order == "4":
-                    
-                    order_name = input("Whose order would you like to update? ")
-                    
-                    for order in orders:
-                        
-                        if order['customer_name'] == order_name:
-                            while True:
-                                new_order_name = input("Please enter the updated name of the customer: ")
-                                if new_order_name != "":
-                                    order['customer_name'] = new_order_name
-                                new_order_phone = input("Please enter the updated phone number of the customer: ")
-                                if new_order_phone != "":
-                                    order['customer_phone'] = new_order_phone
-                                new_order_address = input("Please enter the updated address of the customer: ")
-                                if new_order_address != "":
-                                    order['customer_address'] = new_order_address
-                                print("The available couriers are:")
-                                
-                                text_functions.courier_list_select()
-                                
-                                order['status'] = "Preparing"
-                                print("The available items are:")
-                                text_functions.product_list_select()
-                                
-                                break
-                                
-                            
+                    update_functions.update_order_in_db(connection)
                 elif user_input_order == "5":
-                    order_name = input("Whose order would you like to delete? ")
-                    
-                    for order in orders:
-                        
-                        if order['customer_name'] == order_name:
-                            
-                            update_functions.delete_dict_in_list(order, orders)
-                            
+                    update_functions.delete_order_in_db(connection)
                 elif user_input_order == "6":
                     break
                     menu_functions.main_menu()

@@ -4,7 +4,7 @@ from text_functions import read_data_from_csv
 from save_functions import save_dict_to_csv
 from unittest.mock import patch, Mock
 import update_functions
-#Hello
+
 # def test_add_dict_to_list():
 # #Assemble
 #     test_list = [{"Mike":"07892848858"},{"Munir":"078395479"},]
@@ -45,6 +45,7 @@ import update_functions
 #     assert list_of_dicts[0]["customer_name"] == "Munir"
 #     print("This has worked")
 
+# Database Tests ----------------------------------------------------------------------------------------------------------
 
 # Mocks print_functions, input x 3, execute_sql
 @patch("builtins.input")
@@ -141,7 +142,7 @@ test_add_courier_to_db()
 @patch("update_functions.execute_sql")
 @patch("print_functions.read_courier_data_from_db")
 def test_delete_courier_in_db(mock_print, mock_execute, mock_input):
-    mock_input.side_effec = ["1", "Lucy", 123456789]
+    mock_input.side_effect = ["1", "Lucy", 123456789]
     mock_print.return_value = None
     expected_SQL = (f'DELETE FROM couriers WHERE courier_id = "1"')
     

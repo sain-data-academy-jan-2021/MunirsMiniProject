@@ -1,6 +1,7 @@
 import pymysql
 import menu_functions
 import print_functions
+import update_functions
 
 def print_list(list):
     for item in list:
@@ -19,6 +20,15 @@ def read_courier_data_from_db(connection):
     cursor.execute('SELECT courier_id, courier_name, courier_phone FROM couriers;')
     courier_rows = cursor.fetchall()
     for row in courier_rows:
+        print(row)
+    cursor.close()
+
+
+def read_order_data_from_db(connection):
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM orders;')
+    order_rows = cursor.fetchall()
+    for row in order_rows:
         print(row)
     cursor.close()
 
