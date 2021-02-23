@@ -4,9 +4,11 @@ import save_functions
 import update_functions 
 import menu_functions
 import text_functions
+import validation_functions
 import csv
 import os
 import pymysql
+from prettytable import from_db_cursor
 
 from dotenv import load_dotenv
 
@@ -25,10 +27,8 @@ connection = pymysql.connect(
   database
 )
 
-
-print("""
-      
-Welcome to the..
+print(
+"""Welcome to the..
 __________                   .___             __     _____                 
 \______   \_______  ____   __| _/_ __   _____/  |_  /  _  \ ______ ______  
  |     ___/\_  __ \/  _ \ / __ |  |  \_/ ___\   __\/  /_\  \\____ \\____ \ 
@@ -39,12 +39,15 @@ __________                   .___             __     _____
 
 
 def RunApp(connection):
-    user_input_main = menu_functions.main_menu()
-        
+    valid_options = ["1","2","3","4","0"]
+    
+    user_input_main = validation_functions.validity_checker(valid_options, menu_functions.main_menu())
     while user_input_main != "0":
         
         if user_input_main == "1":
-            user_input_product = menu_functions.product_menu()
+            valid_options = ["1","2","3","4","5"]
+            
+            user_input_product = validation_functions.validity_checker(valid_options, menu_functions.product_menu())
             
             while user_input_product != 5:
                 
@@ -63,14 +66,17 @@ def RunApp(connection):
                     update_functions.delete_product_in_db(connection)
                     
                 elif user_input_product == "5":
+                    os.system('clear')
                     break
                     
-                user_input_product = menu_functions.product_menu()
+                user_input_product = validation_functions.validity_checker(valid_options, menu_functions.product_menu())
                 
-            user_input_main = menu_functions.main_menu()
+            user_input_main = validation_functions.validity_checker(valid_options, menu_functions.main_menu())
             
         elif user_input_main == "2":
-            user_input_courier = menu_functions.courier_menu()
+            valid_options = ["1","2","3","4","5"]
+            
+            user_input_courier = validation_functions.validity_checker(valid_options, menu_functions.courier_menu())
             
             while user_input_courier != 5:
                 
@@ -87,15 +93,17 @@ def RunApp(connection):
                     update_functions.update_courier_in_db(connection)
                     
                 elif user_input_courier == "5":
+                    os.system('clear')
                     break
                 
-                user_input_courier = menu_functions.courier_menu()
+                user_input_courier = validation_functions.validity_checker(valid_options, menu_functions.courier_menu())
                 
-            user_input_main = menu_functions.main_menu()
+            user_input_main = validation_functions.validity_checker(valid_options, menu_functions.main_menu())
             
         elif user_input_main == "3":
+            valid_options = ["1","2","3","4","5","6"]
             
-            user_input_order = menu_functions.order_menu()
+            user_input_order = validation_functions.validity_checker(valid_options, menu_functions.order_menu())
             
             while user_input_order != 6:
                 
@@ -115,19 +123,17 @@ def RunApp(connection):
                     update_functions.delete_order_in_db(connection)
                     
                 elif user_input_order == "6":
+                    os.system('clear')
                     break
                     
                     menu_functions.main_menu()
                     
-                user_input_order = menu_functions.order_menu()
+                user_input_order = validation_functions.validity_checker(valid_options, menu_functions.order_menu())
                 
-            user_input_main = menu_functions.main_menu()
+            user_input_main = update_functions.validity_checker(valid_options, menu_functions.main_menu())
             
         elif user_input_main == "4":
             print("Your data has been saved, you will now exit the app")
-            # save_functions.save_dict_products_to_csv("products.csv", products)
-            # save_functions.save_dict_couriers_to_csv("couriers.csv", couriers)
-            # save_functions.save_dict_to_csv("orders.csv", orders)
             
             connection.close()
             
@@ -135,15 +141,7 @@ def RunApp(connection):
             
         elif user_input_main == "0":
             connection.close()
-            
-            # menu_functions.main_menu() 
 
 RunApp(connection)
-
-# function for validation? try and except add to all functions (input related)
-# upper/lower case of inputs?
-# Print in tables - tabulate
-# keep header at the top - (clear then print header)
-# unit test recent database functions in pytest framework
 
 
