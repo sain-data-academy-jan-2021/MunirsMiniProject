@@ -90,4 +90,3 @@ def update_courier_in_db(connection):
     cursor.execute(f'UPDATE couriers SET courier_name = "{new_courier_name}", courier_phone = "{new_courier_phone}" WHERE courier_id = "{courier_id}"')
     cursor.close()
     connection.commit()
-

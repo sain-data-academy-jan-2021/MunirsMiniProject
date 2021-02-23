@@ -92,7 +92,7 @@ test_delete_product_in_db()
 def test_add_product_in_db(mock_print, mock_execute, mock_input):
     mock_input.side_effect = ['Headphones', 20.12]
     mock_print.return_value = None
-    expected_SQL = (f'INSERT INTO products (product_name, product_price) VALUES ("Headphones", 20.12')
+    expected_SQL = (f'INSERT INTO products (product_name, product_price) VALUES ("Headphones", 20.12)')
     
     update_functions.add_product_in_db(None)
     

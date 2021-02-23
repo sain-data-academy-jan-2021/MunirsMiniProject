@@ -40,6 +40,7 @@ __________                   .___             __     _____
 
 def RunApp(connection):
     user_input_main = menu_functions.main_menu()
+        
     while user_input_main != "0":
         
         if user_input_main == "1":
@@ -58,16 +59,16 @@ def RunApp(connection):
                     
                 elif user_input_product == "4":
                     print_functions.read_product_data_from_db(connection)
+                    
                     update_functions.delete_product_in_db(connection)
                     
                 elif user_input_product == "5":
-                    
                     break
-                else:
-                    print("Bye Bye")
-                    sys.exit()
-                user_input_product = menu_functions.product_menu() 
+                    
+                user_input_product = menu_functions.product_menu()
+                
             user_input_main = menu_functions.main_menu()
+            
         elif user_input_main == "2":
             user_input_courier = menu_functions.courier_menu()
             
@@ -84,11 +85,16 @@ def RunApp(connection):
                     
                 elif user_input_courier == "4":
                     update_functions.update_courier_in_db(connection)
+                    
                 elif user_input_courier == "5":
                     break
+                
                 user_input_courier = menu_functions.courier_menu()
+                
             user_input_main = menu_functions.main_menu()
-        elif user_input_main == "3": 
+            
+        elif user_input_main == "3":
+            
             user_input_order = menu_functions.order_menu()
             
             while user_input_order != 6:
@@ -98,34 +104,46 @@ def RunApp(connection):
                     
                 elif user_input_order == "2":
                     update_functions.add_order_to_db(connection)
+                    
                 elif user_input_order == "3":
                     update_functions.update_order_status_in_db(connection)
+                    
                 elif user_input_order == "4":
                     update_functions.update_order_in_db(connection)
+                    
                 elif user_input_order == "5":
                     update_functions.delete_order_in_db(connection)
+                    
                 elif user_input_order == "6":
                     break
+                    
                     menu_functions.main_menu()
+                    
                 user_input_order = menu_functions.order_menu()
+                
             user_input_main = menu_functions.main_menu()
+            
         elif user_input_main == "4":
             print("Your data has been saved, you will now exit the app")
             # save_functions.save_dict_products_to_csv("products.csv", products)
             # save_functions.save_dict_couriers_to_csv("couriers.csv", couriers)
-            save_functions.save_dict_to_csv("orders.csv", orders)
+            # save_functions.save_dict_to_csv("orders.csv", orders)
+            
             connection.close()
+            
             exit()
             
         elif user_input_main == "0":
             connection.close()
+            
             # menu_functions.main_menu() 
 
 RunApp(connection)
 
-# Enter address as string (.split into objects)
-# Refining functions
-# print to a table (pip install pretty table)
-
+# function for validation? try and except add to all functions (input related)
+# upper/lower case of inputs?
+# Print in tables - tabulate
+# keep header at the top - (clear then print header)
+# unit test recent database functions in pytest framework
 
 

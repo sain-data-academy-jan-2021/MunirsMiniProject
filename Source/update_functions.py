@@ -49,7 +49,7 @@ def add_product_in_db(connection):
     new_product_price = float(input("What is the price of this product?"))
     if new_product_price == "0":
         return
-    sql = (f'INSERT INTO products (product_name, product_price) VALUES ("{new_product_name}", {new_product_price}')
+    sql = (f'INSERT INTO products (product_name, product_price) VALUES ("{new_product_name}", {new_product_price})')
     execute_sql(connection, sql)
 
 def update_product_in_db(connection):
@@ -122,7 +122,6 @@ def add_order_to_db(connection):
 
 def update_order_in_db(connection):
     existing_ids = [id[0] for id in execute_sql_select(connection, 'select order_id from orders')]
-    chosen_products = [id[0] for id in execute_sql_select(connection, 'select product_id from products')]
     while True:
         print_functions.read_order_data_from_db(connection)
         id = int(input("What order would you like to update from the list above?"))
@@ -133,28 +132,11 @@ def update_order_in_db(connection):
             print_functions.read_courier_data_from_db(connection)
             updated_courier = input("Please enter the updated courier from the list above")
             updated_status = input("Please enter the updated status of the order")
-            execute_sql(connection, f'UPDATE orders SET customer_name = "{updated_order_name}", customer_address = "{updated_order_address}", customer_phone = "{updated_phone}", courier = "{updated_courier}", order_status = "{updated_status}"')
-            print_functions.read_product_data_from_db(connection)
-            while True:
-            execute_sql(connection, f'DELETE product_id FROM basket where order_id = {id}')
-            updated_items = int(input("Please enter the new items you would like to add to the order, Press 0 to continue"))
-                execute_sql(connection, f'UPDATE basket SET product_id = {updated_items} WHERE order_id = {id}')
-                continue
-                break
-        #Delete from basket where order_id matches 
-        
-        #insert all new basket items for order
-        
-        
-    for row in execute_sql_select(connection, 'SELECT product_id FROM basket W'):
-        existing_ids.append(row[0])
-    while True:
-        updated_items = int(input("Please enter the new items you would like to add to the order, Press 0 to continue"))
-        if updated_items in chosen_products:
-            chosen_products.append(updated_items)
-            execute_sql(connection, f'UPDATE basket SET product_id = {updated_items} WHERE order_id = {id}')
-            continue
-        elif updated_items == 0:
+            execute_sql(connection, f'UPDATE orders SET customer_name = "{updated_order_name}", customer_address = "{updated_order_address}", customer_phone = "{updated_phone}", courier = "{updated_courier}", order_status = "{updated_status}" WHERE order_id = {id}')
+            execute_sql(connection, f'DELETE from basket where order_id = {id}')
+            items = add_products_to_order(connection)
+            for item in items:
+                execute_sql(connection, f"insert into basket (order_id, product_id) values ({id}, {item})")
             break
 
 def update_order_status_in_db(connection):
@@ -196,5 +178,3 @@ def add_products_to_order(connection):
         else:
             continue
     return chosen_products
-
-#Delete from basket first then orders table
