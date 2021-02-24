@@ -1,3 +1,6 @@
+from prettytable import from_db_cursor
+import os
+
 def main_menu():
     choice = input("""1. Product Menu
 2. Courier Menu
@@ -8,7 +11,6 @@ def main_menu():
 
 def product_menu():
     product_choice = input("""
-
 1. Show Product list
 2. Add Product
 3. Update Product
@@ -27,7 +29,6 @@ def courier_menu():
 
 def order_menu():
     order_choice = input("""
-
 1. Show Order list
 2. Create New Order
 3. Update Order Status
@@ -35,3 +36,4 @@ def order_menu():
 5. Delete Order
 6. Main Menu  """)
     return order_choice
+
