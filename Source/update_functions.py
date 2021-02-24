@@ -102,10 +102,12 @@ def delete_order_in_db(connection):
     existing_ids = [id[0] for id in execute_sql_select(connection, 'select order_id from orders')]
     while True:
         print_functions.read_order_data_from_db(connection)
-        id = validation_functions.getInteger("What order would you like to delete from the list above?")
+        id = validation_functions.getInteger("What order would you like to delete from the list above? Press 0 to cancel")
         if id in existing_ids:
             execute_sql(connection, f'DELETE from basket where order_id = {id}')
             execute_sql(connection, f'DELETE from orders where order_id = {id}')
+            break
+        elif id == 0:
             break  
         else:
             print("This option is invalid")

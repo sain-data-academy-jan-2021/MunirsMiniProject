@@ -2,7 +2,8 @@ from prettytable import from_db_cursor
 import os
 
 def main_menu():
-    choice = input("""1. Product Menu
+    choice = input("""
+1. Product Menu
 2. Courier Menu
 3. Order Menu
 4. Save data and exit
@@ -37,3 +38,13 @@ def order_menu():
 6. Main Menu  """)
     return order_choice
 
+def header():
+    print(
+"""Welcome to the..
+__________                   .___             __     _____                 
+\______   \_______  ____   __| _/_ __   _____/  |_  /  _  \ ______ ______  
+ |     ___/\_  __ \/  _ \ / __ |  |  \_/ ___\   __\/  /_\  \\____ \\____ \ 
+ |    |     |  | \(  <_> ) /_/ |  |  /\  \___|  | /    |    \  |_> >  |_> >
+ |____|     |__|   \____/\____ |____/  \___  >__| \____|__  /   __/|   __/ 
+                              \/           \/             \/|__|   |__|     
+""")
