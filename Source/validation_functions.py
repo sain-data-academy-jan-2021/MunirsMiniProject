@@ -19,6 +19,6 @@ def validity_checker(valid_options, option):
         if option in valid_options:
             return option
         else:
-            option = input("You have input an invalid option, please try again: ")
+            option = input("You have entered an invalid option, please try again: ")
 
 
