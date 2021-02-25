@@ -46,6 +46,7 @@ def RunApp(connection):
                 
                 if user_input_product == "1":
                     os.system('clear')
+                    
                     menu_functions.header()
                     
                     print_functions.read_product_data_from_db(connection)
@@ -63,12 +64,12 @@ def RunApp(connection):
                     menu_functions.header()
                     
                 elif user_input_product == "4":
-                    print_functions.read_product_data_from_db(connection)
-                    
                     update_functions.delete_product_in_db(connection)
                     
                     os.system('clear')
+                    
                     menu_functions.header()
+                    
                 elif user_input_product == "5":
                     os.system('clear')
                     menu_functions.header()

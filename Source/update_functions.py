@@ -38,31 +38,46 @@ def update_dict_in_list(dict_old, dict_new, list):
 
 
 def delete_product_in_db(connection):
-    delete_product = validation_functions.getInteger("What product would you like to delete? Press 0 to cancel!")
-    if delete_product == 0:
-        return
-    sql = (f'DELETE FROM products WHERE product_id = "{delete_product}"')
-    execute_sql(connection, sql)
-    
+    product_ids = [id[0] for id in execute_sql_select(connection, 'select product_id from products')]
+    while True:
+        print_functions.read_product_data_from_db(connection)
+        id = validation_functions.getInteger("What product would you like to delete? Press 0 to cancel!")
+        if id in product_ids:
+            sql = (f'DELETE FROM products WHERE product_id = "{id}"')
+            execute_sql(connection, sql)
+        elif id == 0:
+            break
+        else:
+            print("This product does not exist, please try again")
+
 def add_product_in_db(connection):
-    new_product_name = input("What product would you like to add? (Press 0 to cancel!) ")
-    if new_product_name == 0:
-        return
-    new_product_price = validation_functions.getFloat("What is the price of the product you would you like to add? (Press 0 to cancel")
-    if new_product_price == 0:
-        return
-    sql = (f'INSERT INTO products (product_name, product_price) VALUES ("{new_product_name}", {new_product_price})')
-    execute_sql(connection, sql)
+    product_names = [id[0] for id in execute_sql_select(connection, 'select product_name from products')]
+    while True:
+        print_functions.read_product_data_from_db(connection)
+        id = input("What product would you like to add? (Press 0 to cancel!)")
+        if id in product_names:
+            break
+        elif id == 0:
+            break
+        else:
+            new_product_price = validation_functions.getFloat("What is the price of the product you would you like to add? (Press 0 to cancel")
+            sql = (f'INSERT INTO products (product_name, product_price) VALUES ("{new_product_name}", {new_product_price})')
+            execute_sql(connection, sql)
 
 def update_product_in_db(connection):
-    print_functions.read_product_data_from_db(connection)
-    product_id = validation_functions.getInteger("What product would you like to update? Press 0 to cancel!")
-    if product_id == 0:
-        return
-    new_product_name = input("What is the new product you would like to add?")
-    new_product_price = validation_functions.getFloat("What is the price of the new product?")
-    sql = (f'UPDATE products SET product_name = "{new_product_name}", product_price = "{new_product_price}" WHERE product_id = "{product_id}"')
-    execute_sql(connection, sql)
+    product_ids = [id[0] for id in execute_sql_select(connection, 'select product_id from products')]
+    while True:
+        print_functions.read_product_data_from_db(connection)
+        id = validation_functions.getInteger("What product would you like to update? Press 0 to cancel!")
+        if id in product_ids:
+            new_product_name = input("What is the new product you would like to add?")
+            new_product_price = validation_functions.getFloat("What is the price of the new product?")
+            sql = (f'UPDATE products SET product_name = "{new_product_name}", product_price = "{new_product_price}" WHERE product_id = "{product_id}"')
+            execute_sql(connection, sql)
+        elif id == 0:
+            break
+        else:
+            print("This product does not exist, please try again")
 
 def add_courier_to_db(connection):
     new_courier_name = input("What is the name of the courier you would like to add?")
@@ -77,14 +92,20 @@ def delete_courier_in_db(connection):
     execute_sql(connection, sql)
 
 def update_courier_in_db(connection):
-    print_functions.read_courier_data_from_db(connection)
-    courier_id = validation_functions.getInteger("What courier would you like to update? Press 0 to")
-    if courier_id == 0:
-        return
-    new_courier_name = input("What is the name of the new courier you would like to add?")
-    new_courier_phone = input("What is the new phone number of the courier?")
-    sql = (f'UPDATE couriers SET courier_name = "{new_courier_name}", courier_phone = "{new_courier_phone}" WHERE courier_id = "{courier_id}"') 
-    execute_sql(connection, sql)
+    courier_ids = [id[0] for id in execute_sql_select(connection, 'select courier_id from couriers')]
+    while True:
+        print_functions.read_courier_data_from_db(connection)
+        id = courier_id = validation_functions.getInteger("What courier would you like to update? Press 0 to cancel")
+        if id in courier_ids:
+            print_functions.read_courier_data_from_db(connection)
+            new_courier_name = input("What is the name of the new courier you would like to add?")
+            new_courier_phone = input("What is the new phone number of the courier?")
+            sql = (f'UPDATE couriers SET courier_name = "{new_courier_name}", courier_phone = "{new_courier_phone}" WHERE courier_id = "{courier_id}"') 
+            execute_sql(connection, sql)
+        elif id == 0:
+            break
+        else:
+            print("This courier does not exist, please try again")
 
 def execute_sql(connection, sql):
     cursor = connection.cursor()
@@ -110,7 +131,7 @@ def delete_order_in_db(connection):
         elif id == 0:
             break  
         else:
-            print("This option is invalid")
+            print("This order does not exist, please try again")
 
 def add_order_to_db(connection):
     customer_name = input('Please enter your full name for the order \n').capitalize()
@@ -128,7 +149,7 @@ def update_order_in_db(connection):
     existing_ids = [id[0] for id in execute_sql_select(connection, 'select order_id from orders')]
     while True:
         print_functions.read_order_data_from_db(connection)
-        id = validation_functions.getInteger("What order would you like to update from the list above?")
+        id = validation_functions.getInteger("What order would you like to update from the list above? Press 0 to cancel")
         if id in existing_ids:
             updated_order_name = input("Please enter the updated name")
             updated_order_address = input("Please eneter the updated address")
@@ -142,6 +163,10 @@ def update_order_in_db(connection):
             for item in items:
                 execute_sql(connection, f"insert into basket (order_id, product_id) values ({id}, {item})")
             break
+        elif id == 0:
+            break
+        else:
+            print("This order does not exist, please try again")
 
 def update_order_status_in_db(connection):
     print_functions.read_order_data_from_db(connection)
@@ -152,6 +177,10 @@ def update_order_status_in_db(connection):
             updated_order_status = input("What is the new status of this order?")
             execute_sql(connection, f'UPDATE orders SET order_status = "{updated_order_status}"')
             break
+        elif id == 0:
+            break
+        else:
+            print("This order does not exist, please try again")
 
 
 def add_courier_to_order(connection):
@@ -160,9 +189,11 @@ def add_courier_to_order(connection):
     for row in execute_sql_select(connection, 'SELECT courier_id FROM couriers'):
         existing_ids.append(row[0])
     while True: 
-        pick_courier = validation_functions.getInteger("Which courier would you like to choose?")
+        pick_courier = validation_functions.getInteger("Which courier would you like to choose? Press 0 to cancel")
         if pick_courier in existing_ids:
             return pick_courier
+        elif pick_courier == 0:
+            break
         else:
             continue
 
