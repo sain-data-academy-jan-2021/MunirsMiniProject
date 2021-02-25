@@ -51,17 +51,18 @@ def delete_product_in_db(connection):
             print("This product does not exist, please try again")
 
 def add_product_in_db(connection):
-    product_names = [id[0] for id in execute_sql_select(connection, 'select product_name from products')]
+    product_names = [name[0] for name in execute_sql_select(connection, 'select product_name from products')]
     while True:
         print_functions.read_product_data_from_db(connection)
-        id = input("What product would you like to add? (Press 0 to cancel!)")
-        if id in product_names:
-            break
-        elif id == 0:
+        name = input("What product would you like to add? (Press 0 to cancel!)")
+        if name in product_names:
+            print("This product already exists")
+            temp = input("Press enter to continue")
+        elif name == "0":
             break
         else:
             new_product_price = validation_functions.getFloat("What is the price of the product you would you like to add? (Press 0 to cancel")
-            sql = (f'INSERT INTO products (product_name, product_price) VALUES ("{new_product_name}", {new_product_price})')
+            sql = (f'INSERT INTO products (product_name, product_price) VALUES ("{name}", {new_product_price})')
             execute_sql(connection, sql)
 
 def update_product_in_db(connection):
