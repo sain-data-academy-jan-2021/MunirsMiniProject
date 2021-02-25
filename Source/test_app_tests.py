@@ -5,6 +5,10 @@ from save_functions import save_dict_to_csv
 from unittest.mock import patch, Mock
 import update_functions
 
+
+
+
+
 @patch("builtins.input")
 @patch("update_functions.execute_sql")
 @patch("print_functions.read_courier_data_from_db")
@@ -84,13 +88,10 @@ def test_add_courier_to_db(mock_print, mock_execute, mock_input):
     mock_input.side_effect = ["Michelle", 123456789]
     mock_print.return_value = None
     expected_SQL = (f'INSERT INTO couriers (courier_name, courier_phone) VALUES ("Michelle", 123456789)')
-
     #Act
     update_functions.add_courier_to_db(None)
-
     #Assert
     mock_execute.assert_called_with(None, expected_SQL)
-
     print("This has worked")
 
 test_add_courier_to_db()
@@ -106,7 +107,7 @@ def test_delete_courier_in_db(mock_print, mock_execute, mock_input):
     update_functions.delete_courier_in_db(None)
     
     mock_execute.assert_called_with(None, expected_SQL)
-
     print("This has worked")
 
 test_delete_courier_in_db()
+
