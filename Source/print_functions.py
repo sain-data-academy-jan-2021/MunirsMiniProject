@@ -1,7 +1,6 @@
 import pymysql
 import menu_functions
 import print_functions
-import update_functions
 import os
 from prettytable import from_db_cursor
 
