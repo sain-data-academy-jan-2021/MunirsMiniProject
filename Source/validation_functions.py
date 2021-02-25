@@ -1,3 +1,5 @@
+import os
+
 def getFloat(message):
     while True:
         try:

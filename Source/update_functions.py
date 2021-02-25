@@ -3,39 +3,19 @@ import pymysql
 import menu_functions
 import validation_functions
 from prettytable import from_db_cursor
+import os
 
+def execute_sql(connection, sql):
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    cursor.close()
+    connection.commit()
 
-def update_item_in_list(item_old, item_new, list):
-    if item_old in list:
-        list.remove(item_old)
-        list.append(item_new)
-        print_functions.print_list(list)
-
-def add_item_to_list(item, list):
-    list.append(item)
-    print_functions.print_list(list)
-
-def delete_item_in_list(item, list):
-    if item in list:
-        list.remove(item)
-        print_functions.print_list(list)
-
-def delete_dict_in_list(dict, list):
-    if dict in list:
-        list.remove(dict)
-
-def add_dict_to_list(dict, list):
-    list.append(dict)
-    
-
-def update_dict_in_list(dict_old, dict_new, list):
-    if dict_old in list:
-        list.remove(dict_old)
-        list.append(dict_new)
-        print_functions.print_list(list)
-
-# Database Functions ----------------------------------------------------------------------------------------------------
-
+def execute_sql_select(connection, sql):
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    cursor.close()
+    return cursor.fetchall()
 
 def delete_product_in_db(connection):
     product_ids = [id[0] for id in execute_sql_select(connection, 'select product_id from products')]
@@ -48,16 +28,15 @@ def delete_product_in_db(connection):
         elif id == 0:
             break
         else:
-            print("This product does not exist, please try again")
+            print("This product does not exist, please try again!")
 
 def add_product_in_db(connection):
     product_names = [name[0] for name in execute_sql_select(connection, 'select product_name from products')]
     while True:
         print_functions.read_product_data_from_db(connection)
-        name = input("What product would you like to add? (Press 0 to cancel!)")
+        name = input("What product would you like to add? (Press 0 to cancel!)").capitalize()
         if name in product_names:
-            print("This product already exists")
-            temp = input("Press enter to continue")
+            print("This product already exists, please try again!")
         elif name == "0":
             break
         else:
@@ -73,52 +52,56 @@ def update_product_in_db(connection):
         if id in product_ids:
             new_product_name = input("What is the new product you would like to add?")
             new_product_price = validation_functions.getFloat("What is the price of the new product?")
-            sql = (f'UPDATE products SET product_name = "{new_product_name}", product_price = "{new_product_price}" WHERE product_id = "{product_id}"')
+            sql = (f'UPDATE products SET product_name = "{new_product_name}", product_price = "{new_product_price}" WHERE product_id = "{id}"')
             execute_sql(connection, sql)
         elif id == 0:
             break
         else:
-            print("This product does not exist, please try again")
+            print("This product does not exist, please try again!")
 
 def add_courier_to_db(connection):
-    new_courier_name = input("What is the name of the courier you would like to add?")
-    new_courier_phone = input("What is the phone number of the courier you would like to add?")
-    sql = (f'INSERT INTO couriers (courier_name, courier_phone) VALUES ("{new_courier_name}", {new_courier_phone})')
-    execute_sql(connection, sql)
+    courier_names = [name[0] for name in execute_sql_select(connection, 'select courier_name from couriers')]
+    while True:
+        print_functions.read_courier_data_from_db(connection)
+        name = input("What is the name of the courier you would like to add? Press 0 to cancel!").capitalize()
+        if name in courier_names:
+            print("This courier already exists, please try again!")
+        elif name == "0":
+            break
+        else:
+            new_courier_phone = input("What is the phone number of the courier you would like to add?")
+            sql = (f'INSERT INTO couriers (courier_name, courier_phone) VALUES ("{name}", {new_courier_phone})')
+            execute_sql(connection, sql)
 
 def delete_courier_in_db(connection):
-    print_functions.read_courier_data_from_db(connection)
-    delete_courier = validation_functions.getInteger("What courier would you like to delete?")
-    sql = (f'DELETE FROM couriers WHERE courier_id = "{delete_courier}"')
-    execute_sql(connection, sql)
-
-def update_courier_in_db(connection):
     courier_ids = [id[0] for id in execute_sql_select(connection, 'select courier_id from couriers')]
     while True:
         print_functions.read_courier_data_from_db(connection)
-        id = courier_id = validation_functions.getInteger("What courier would you like to update? Press 0 to cancel")
+        id = validation_functions.getInteger("What courier would you like to delete? Press 0 to cancel!")
         if id in courier_ids:
-            print_functions.read_courier_data_from_db(connection)
-            new_courier_name = input("What is the name of the new courier you would like to add?")
-            new_courier_phone = input("What is the new phone number of the courier?")
-            sql = (f'UPDATE couriers SET courier_name = "{new_courier_name}", courier_phone = "{new_courier_phone}" WHERE courier_id = "{courier_id}"') 
+            sql = (f'DELETE FROM couriers WHERE courier_id = "{id}"')
             execute_sql(connection, sql)
         elif id == 0:
             break
         else:
-            print("This courier does not exist, please try again")
+            print("This courier does not exist, please try again!")
 
-def execute_sql(connection, sql):
-    cursor = connection.cursor()
-    cursor.execute(sql)
-    cursor.close()
-    connection.commit()
+def update_courier_in_db(connection):
+    # courier_ids = [id[0] for id in execute_sql_select(connection, 'select courier_id from couriers')]
+    # while True:
+    #     print_functions.read_courier_data_from_db(connection)
+    #     id = validation_functions.getInteger("What courier would you like to update? Press 0 to cancel")
+    #     if id in courier_ids:
+    print_functions.read_courier_data_from_db(connection)
+    new_courier_name = input("What is the name of the new courier you would like to add?")
+    new_courier_phone = input("What is the new phone number of the courier?")
+    sql = (f'UPDATE couriers SET courier_name = "{new_courier_name}", courier_phone = "{new_courier_phone}" WHERE courier_id = "{id}"') 
+    execute_sql(connection, sql)
+        # elif id == 0:
+        #     break
+        # else:
+        #     print("This courier does not exist, please try again!")
 
-def execute_sql_select(connection, sql):
-    cursor = connection.cursor()
-    cursor.execute(sql)
-    cursor.close()
-    return cursor.fetchall()
 
 def delete_order_in_db(connection):
     existing_ids = [id[0] for id in execute_sql_select(connection, 'select order_id from orders')]
@@ -132,19 +115,27 @@ def delete_order_in_db(connection):
         elif id == 0:
             break  
         else:
-            print("This order does not exist, please try again")
+            print("This order does not exist, please try again!")
 
 def add_order_to_db(connection):
-    customer_name = input('Please enter your full name for the order \n').capitalize()
-    customer_address = input('Please enter a delivery address \n')
-    customer_phone = input('Enter your phone number \n')
-    courier = add_courier_to_order(connection)
-    order_status = 'In progress'
-    items = add_products_to_order(connection)
-    execute_sql(connection, f"insert into orders (customer_name, customer_address, customer_phone, courier, order_status) values ('{customer_name}', '{customer_address}', '{customer_phone}', '{courier}', '{order_status}')")
-    order_id = execute_sql_select(connection, 'SELECT max(order_id) from orders')[0][0]
-    for item in items:
-        execute_sql(connection, f"insert into basket (order_id, product_id) values ({order_id}, {item})")
+    existing_names = [name[0] for name in execute_sql_select(connection, 'select customer_name from orders')]
+    while True:
+        print_functions.read_order_data_from_db(connection)
+        name = input('Please enter your full name for the order, press 0 to cancel! \n').capitalize()
+        if name in existing_names:
+            print("This customer already exists, please try again")
+        elif name == "0":
+            break
+        else:
+            customer_address = input('Please enter a delivery address \n')
+            customer_phone = input('Enter your phone number \n')
+            courier = add_courier_to_order(connection)
+            order_status = 'In progress'
+            items = add_products_to_order(connection)
+            execute_sql(connection, f"insert into orders (customer_name, customer_address, customer_phone, courier, order_status) values ('{name}', '{customer_address}', '{customer_phone}', '{courier}', '{order_status}')")
+            order_id = execute_sql_select(connection, 'SELECT max(order_id) from orders')[0][0]
+            for item in items:
+                execute_sql(connection, f"insert into basket (order_id, product_id) values ({order_id}, {item})")
 
 def update_order_in_db(connection):
     existing_ids = [id[0] for id in execute_sql_select(connection, 'select order_id from orders')]
@@ -167,13 +158,13 @@ def update_order_in_db(connection):
         elif id == 0:
             break
         else:
-            print("This order does not exist, please try again")
+            print("This order does not exist, please try again!")
 
 def update_order_status_in_db(connection):
     print_functions.read_order_data_from_db(connection)
     existing_ids = [id[0] for id in execute_sql_select(connection, 'select order_id from orders')]
     while True:
-        id = validation_functions.getInteger("Which order's status would you like to update?")
+        id = validation_functions.getInteger("Which order's status would you like to update? Press 0 to cancel!")
         if id in existing_ids:
             updated_order_status = input("What is the new status of this order?")
             execute_sql(connection, f'UPDATE orders SET order_status = "{updated_order_status}"')
@@ -181,7 +172,7 @@ def update_order_status_in_db(connection):
         elif id == 0:
             break
         else:
-            print("This order does not exist, please try again")
+            print("This order does not exist, please try again!")
 
 
 def add_courier_to_order(connection):
