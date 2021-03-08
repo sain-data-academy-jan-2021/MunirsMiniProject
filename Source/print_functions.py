@@ -4,10 +4,6 @@ import print_functions
 import os
 from prettytable import from_db_cursor
 
-def print_list(list):
-    for item in list:
-        print(item)
-
 def read_product_data_from_db(connection):
     cursor = connection.cursor()
     cursor.execute('SELECT product_id, product_name, product_price FROM products;')
